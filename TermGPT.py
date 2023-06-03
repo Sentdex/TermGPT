@@ -6,16 +6,19 @@ import subprocess
 import re
 import requests
 from bs4 import BeautifulSoup
+import os
 
 # load and set our key
-openai.api_key = open("key.txt", "r").read().strip("\n")
+openai.api_key = os.environ.get('OPEN_AI_KEY')
+
+MODEL = os.environ.get('OPEN_AI_MODEL')
 
 DEBUG = True
 message_history = TERMINAL_COMMANDS
 READ_RE_PATTERN = r"--r \[(.*?)\]"
 WEB_RE_PATTERN = r"--w \[(.*?)\]"
 
-def gpt_query(message_history, model="gpt-4", max_retries=15, sleep_time=2):
+def gpt_query(message_history, model=MODEL, max_retries=15, sleep_time=2):
     retries = 0
     if DEBUG:
         print(colorama.Fore.MAGENTA + colorama.Style.DIM + "Message History: " + str(message_history) + colorama.Style.RESET_ALL)
@@ -111,7 +114,7 @@ while True:
 
     while not GPT_DONE:
         print(colorama.Fore.GREEN + colorama.Style.DIM + "Querying GPT for next command (these are not running yet)..." + colorama.Style.RESET_ALL)
-        reply_content = gpt_query(message_history=message_history, model="gpt-4")
+        reply_content = gpt_query(message_history=message_history, model=MODEL)
 
         message_history.append({"role": "assistant", "content": reply_content})
         message_history.append({"role": "user", "content": "NEXT"})
