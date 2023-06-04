@@ -15,6 +15,7 @@ load_dotenv()
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 DEBUG = False
+logging.basicConfig(level=logging.WARNING)
 message_history = TERMINAL_COMMANDS
 READ_RE_PATTERN = r"--r \[(.*?)\]"
 WEB_RE_PATTERN = r"--w \[(.*?)\]"
@@ -24,8 +25,7 @@ def gpt_query(model="gpt-4", max_retries=15, sleep_time=2):
     retries = 0
     logger = logging.getLogger()
 
-    if DEBUG:
-        logger.info("Message History: %s", message_history)
+    logger.info("Message History: %s", message_history)
         
     while retries < max_retries:
         try:
