@@ -8,7 +8,7 @@ The notebook also breaks down how the script works.
 # Usage
 
 Run with `$ python3 TermGPT.py`
-You will need to create a .env file similar to https://github.com/Sentdex/TermGPT/blob/main/.env.example, or set `OPENAI_API_KEY` manually.
+You will need to create a `.env` file similar to https://github.com/Sentdex/TermGPT/blob/main/.env.example, or set `OPENAI_API_KEY` manually.
 
 From here, you make your programming/development request. The script will run and query GPT-4 for a series of terminal commands to run to achieve this objective. This is including, but not limited to: reading files, writing code, reading websites, running code, running terminal commands...etc. 
 
