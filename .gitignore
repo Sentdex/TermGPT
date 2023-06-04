@@ -1,0 +1,22 @@
+# .env
+.env
+
+# __pycache__
+__pycache__
+.pytest_cache
+
+# macOS
+.DS_Store
+
+# build
+build
+dist
+
+#venv
+/venv
+.venv
+
+
+# pycharm
+.idea/
+.idea
