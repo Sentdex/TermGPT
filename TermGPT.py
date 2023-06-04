@@ -1,24 +1,32 @@
-import openai
-import colorama
-import time
-from contexts import TERMINAL_COMMANDS
-import subprocess
 import re
+import os
+import time
+import openai
 import requests
+import colorama
+import logging
+import subprocess
+from contexts import TERMINAL_COMMANDS
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 
-# load and set our key
-openai.api_key = open("key.txt", "r").read().strip("\n")
+load_dotenv()
 
-DEBUG = True
+openai.api_key = os.environ.get("OPENAI_API_KEY")
+
+DEBUG = False
 message_history = TERMINAL_COMMANDS
 READ_RE_PATTERN = r"--r \[(.*?)\]"
 WEB_RE_PATTERN = r"--w \[(.*?)\]"
 
-def gpt_query(message_history, model="gpt-4", max_retries=15, sleep_time=2):
+def gpt_query(model="gpt-4", max_retries=15, sleep_time=2):
+    global message_history
     retries = 0
+    logger = logging.getLogger()
+
     if DEBUG:
-        print(colorama.Fore.MAGENTA + colorama.Style.DIM + "Message History: " + str(message_history) + colorama.Style.RESET_ALL)
+        logger.info("Message History: %s", message_history)
+        
     while retries < max_retries:
         try:
             completion = openai.ChatCompletion.create(
@@ -29,17 +37,20 @@ def gpt_query(message_history, model="gpt-4", max_retries=15, sleep_time=2):
             if reply_content:
                 return reply_content
         except Exception as e:
-            print(colorama.Fore.YELLOW + colorama.Style.DIM + "Error during gpt_query() " + str(e) + colorama.Style.RESET_ALL)
+            logger.warning("Error during gpt_query(): %s", e)
             retries += 1
             time.sleep(sleep_time)
+
     raise Exception("Maximum retries exceeded. Check your code for errors.")
 
-def extract_paragraphs(url):
+
+def extract_paragraphs(url: str):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
-    paragraphs = ''
-    for para in soup.find_all('p'):
-        paragraphs += para.text + '\n\n'
+    paragraphs: str = ''
+
+    for paragraph in soup.find_all('p'):
+        paragraphs += paragraph.text + '\n\n'
     return paragraphs
 
 for _ in range(3): print()
@@ -111,13 +122,13 @@ while True:
 
     while not GPT_DONE:
         print(colorama.Fore.GREEN + colorama.Style.DIM + "Querying GPT for next command (these are not running yet)..." + colorama.Style.RESET_ALL)
-        reply_content = gpt_query(message_history=message_history, model="gpt-4")
+        reply_content = gpt_query(model="gpt-4")
 
         message_history.append({"role": "assistant", "content": reply_content})
         message_history.append({"role": "user", "content": "NEXT"})
         print(colorama.Fore.WHITE + colorama.Style.DIM + reply_content + colorama.Style.RESET_ALL)
 
-        if reply_content.lower() == "done" or reply_content.lower() == "done.":
+        if reply_content.lower().startswith("done"):
             GPT_DONE = True
             print(colorama.Fore.YELLOW + colorama.Style.BRIGHT + "Done reached." + colorama.Style.RESET_ALL)
             break
