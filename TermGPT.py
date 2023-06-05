@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 openai.api_key = os.environ.get("OPENAI_API_KEY")
+model_name = os.environ.get("MODEL_NAME")
 
 DEBUG = False
 logging.basicConfig(level=logging.WARNING)
@@ -20,7 +21,7 @@ message_history = TERMINAL_COMMANDS
 READ_RE_PATTERN = r"--r \[(.*?)\]"
 WEB_RE_PATTERN = r"--w \[(.*?)\]"
 
-def gpt_query(model="gpt-4", max_retries=15, sleep_time=2):
+def gpt_query(model=model_name, max_retries=15, sleep_time=2):
     global message_history
     retries = 0
     logger = logging.getLogger()
@@ -122,7 +123,7 @@ while True:
 
     while not GPT_DONE:
         print(colorama.Fore.GREEN + colorama.Style.DIM + "Querying GPT for next command (these are not running yet)..." + colorama.Style.RESET_ALL)
-        reply_content = gpt_query(model="gpt-4")
+        reply_content = gpt_query(model=model_name)
 
         message_history.append({"role": "assistant", "content": reply_content})
         message_history.append({"role": "user", "content": "NEXT"})
