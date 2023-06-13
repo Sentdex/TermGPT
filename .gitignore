@@ -1,5 +1,6 @@
 # .env
 .env
+.env.local
 
 # __pycache__
 __pycache__

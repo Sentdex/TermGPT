@@ -20,7 +20,7 @@ message_history = TERMINAL_COMMANDS
 READ_RE_PATTERN = r"--r \[(.*?)\]"
 WEB_RE_PATTERN = r"--w \[(.*?)\]"
 
-def gpt_query(model="gpt-4", max_retries=15, sleep_time=2):
+def gpt_query(model=os.environ.get("MODEL"), max_retries=15, sleep_time=2):
     global message_history
     retries = 0
     logger = logging.getLogger()
