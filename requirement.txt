@@ -2,3 +2,4 @@ openai
 colorama
 requests
 beautifulsoup4
+python-dotenv
